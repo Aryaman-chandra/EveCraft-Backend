@@ -1,0 +1,79 @@
+{                                        
+Request                                  
+("/users/:email,:password")  =====>            
+(POST)                                      
+Log in request
+if user is present in database  
+Response 
+User token : reference to the user in database
+Response : flag "NOT FOUND" 
+}                                        
+{
+  Sign up 
+  (POST)
+  params: email , password
+  node  ---->   db
+  user id <-----  db
+}
+{
+  ('/get_events')
+   a[[location---->]] node  ---->   db
+        application  <-----[events] <-----  db
+   
+}
+{
+  event manager //scans qr----> event[coordinator].add(coordinator)
+ ( POST )
+ ("/add coordinator")
+ Response:
+ appropos 
+}
+{
+   (POST)
+   "/add_participants"
+   body: json
+   nod ------> database
+
+
+}
+
+{
+    "/get user events"
+    (GET)
+    returns a list of events  
+    resposne <json>
+}
+{
+    (POST)
+    "add event "
+    user ---->node <json> -----> db 
+}
+{
+  When a coordinator or an manager scans a qr 
+  decoded participant id 
+
+  we make an api call
+
+  ("/checkparticipant")
+  
+    if(decodedParticipant found)
+      {
+        if(!marked)
+        {
+            mark---->>db--->>mark //Green
+        }
+        else
+        {
+            user is already present //YEllow 
+        }
+      }
+      else 
+      {
+        invalid participant //RED
+      }
+}
+{
+    "/markPresent"
+
+    participant mark = true in database
+}
