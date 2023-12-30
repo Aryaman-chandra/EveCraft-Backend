@@ -3,16 +3,18 @@ const mongoose = require('mongoose')
 const Schema =  mongoose.Schema
 
 const EventsSchema = new Schema({
-    Event_manager : {
+    event_manager : {
         type : mongoose.Schema.Types.ObjectId,
         ref :  'Users' 
     },
     startTime : String,
     endTime : String,
-    Coordinators : [
+    coordinators : [
         {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'Users' 
+          rid : {
+              type : mongoose.Schema.Types.ObjectId,
+              ref : 'Users' 
+            }
         }
     ],
     participants : [

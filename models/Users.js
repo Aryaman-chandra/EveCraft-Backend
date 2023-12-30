@@ -20,7 +20,7 @@ const UserSchema = new Schema({
         type : String,
         required : true, 
     },
-    Events : {
+    events : {
         type : [
             {
              type : mongoose.Schema.Types.ObjectId,

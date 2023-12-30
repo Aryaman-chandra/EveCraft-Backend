@@ -4,11 +4,11 @@ const {handleEvents,getEvents} = require('../controllers/eventsController')
 
 
 //route to get a list of events 
-router.get('/',handleEvents)
+router.get('/',getEvents)
 
 
-//router to add participants to an event 
-router.post('/add',getEvents)
+//router to add an event to a user  
+router.post('/add',handleEvents)
 
 
 //route to set a coordinator 

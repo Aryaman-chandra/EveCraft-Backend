@@ -1,43 +1,50 @@
 const bcrypt = require('bcrypt')
 const {Events} = require('../models/Events')
-const {ObjectId} = require('mongodb')
-async function getEvents(req,res)
+const User   = require('../models/Users')
+const { default: mongoose } = require('mongoose')
+async function handleEvents(req,res)
 {
 
     try{
-        console.log(req.body.Event_Manager)
-        await Events.create({
-            "Event_Manager" :  ObjectId(req.body.Event_Manager) ,
+
+        var  user = await User.findById(req.body.event_manager)
+        console.log(user._id)
+         await Events.create({
+            "event_manager" :  user._id ,
             "startTime"     :  req.body.startTime,
             "endTime"       :  req.body.endTime,
-            "Coordinators"  :  req.body?.Coordinators,
+            "coordinators"  :  req.body?.Coordinators,
             "participants"  :  req.body?.participants
         })
-        .then(()=>{
+        .then((event)=>{
+            user.events.push(event._id)
+            user.save()
             res.status(201).json({status: "Event created succesfully"})
         })
     }
     catch(e)
     {
      console.log(e)
-     res.send(e)
+     res.status(404).json(e.message)
     }
 }
-async function handleEvents(req,res)
+
+async function getEvents(req,res)
 {
-    var id  = req.body.id
+    const id  = req.body.id
     try{
-         await Events.find({$or:[{Event_Manager:id},{Coordinators:{$in:[id]}}]})
+         await Events.find({$or:[{Event_Manager:new mongoose.Types.ObjectId(id)},{Coordinators:{$in:[new mongoose.Types.ObjectId(id)]}}]})
         .then((events)=>{
             res.status(200).json({status: 'Events found',Events:events})
         })
     }
     catch(e)
     {
+        console.log(e)
      res.send("Cannot find documents")
     }
 }
+ 
 
-
-
+ 
 module.exports = {handleEvents,getEvents}

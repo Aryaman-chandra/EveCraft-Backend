@@ -9,10 +9,10 @@ async function handleSignUp(req,res){
             .then((user)=>{
             console.log('User genrated with credentials')
             var createdUser = {
-                "username" : user.username ,
+                "username" : user.username , 
                 "email" :  user.email , 
-                "Events" : user.Events , 
-            } 
+                "events" : user.Events , 
+            }  
            return  res.status(200).json(createdUser)
             })
         }catch(e)
@@ -22,6 +22,7 @@ async function handleSignUp(req,res){
             return res.status(401).json('User with those details already exists')
         }
 }
+
 async function handleLogin (req,res){
     var email = req.body.email
     var Password = req.body.password
@@ -29,7 +30,7 @@ async function handleLogin (req,res){
 
         if(!user)
         {
-            return res.json('Invalid Username or Password')
+            return res.status(404).json('Invalid Username or Password')
         }
 
         var result = await bcrypt.compare(Password,user.hashedPassword)
@@ -39,13 +40,13 @@ async function handleLogin (req,res){
             var user_details = {
                 id : user._id,
                 email: user.email,
-                events : user.Events
-            }
+                events : user.Events 
+            } 
             
             res.status(200).json(user_details)
         }
         else
-        res.json('Invalid Username or Password')
+        res.status(404).json('Invalid Username or Password')
 
 }
     module.exports = {

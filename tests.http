@@ -11,25 +11,31 @@ POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-    "email": "ancaaa@wreu@gmail.com",
-    "password":"Arn"
+        "email" : "SwarnimBhai@gmail.com",
+        "password" : "Arn"
 }   
 ###
 GET http://localhost:3000/events/
 Content-Type: application/json
 
 {
-    "id" : "6581ecc55b3587b7e48e9347"
+    "id" : "65860c6cbde9eafba916f934"
 }
 ###
 POST http://localhost:3000/events/add
 Content-Type: application/json
 
 {
-    "Event_Manager" : "6581ecc55b3587b7e48e9347",
+    "event_manager" : "65860c6cbde9eafba916f934",
     "startTime"     : "aaj bhaiya ji ",
     "endTime"       : "kl bhaiya ji ",
-    "Coordinators"  :  null,
-    "Participants"  :  null
+    "coordinators"  :  null,
+    "participants"  :  [
+        {
+            "name"  :  "Aryaman Chandra",
+            "email" :   "Aryamanch14@gmail.com",
+            "isPresent" : false
+        }
+    ]
 }
-###
+######
