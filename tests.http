@@ -2,16 +2,16 @@ POST http://localhost:3000/users/signup
 Content-Type: application/json
 
     {
-        "username" : "Aryaman",
-        "email" : "SwarnimBhai@gmail.com",
-        "password" : "Arn"
+        "username" : "SwarnimBhAI",
+        "email" : "gandu@gmail.gandu",
+        "password" : "Arnar"
     }
 ###
 POST http://localhost:3000/users/login
 Content-Type: application/json
 
 {
-        "email" : "SwarnimBhai@gmail.com",
+        "email" : "Swai@gmail.com",
         "password" : "Arn"
 }   
 ###
@@ -19,14 +19,14 @@ GET http://localhost:3000/events/
 Content-Type: application/json
 
 {
-    "id" : "65860c6cbde9eafba916f934"
+    "id" : "65887fb84a5dcafcef5fe28e"
 }
 ###
 POST http://localhost:3000/events/add
 Content-Type: application/json
 
 {
-    "event_manager" : "65860c6cbde9eafba916f934",
+    "event_manager" : "65a13edb564b4508c4158d01",
     "startTime"     : "aaj bhaiya ji ",
     "endTime"       : "kl bhaiya ji ",
     "coordinators"  :  null,
@@ -39,3 +39,20 @@ Content-Type: application/json
     ]
 }
 ######
+POST http://localhost:3000/events/coordinators/add
+Content-Type: application/json
+
+{
+    "id"    : "65a140afa78fbc2bff9b1af2", 
+    "event" :    "65a14058db78b890e0df0f64"
+}
+
+#####
+
+POST http://localhost:3000/events/participants/check
+Content-Type: application/json
+
+{
+    "id" : "65a14058db78b890e0df0f65",
+    "eventId" : "65a14058db78b890e0df0f64"
+}

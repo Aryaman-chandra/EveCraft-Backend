@@ -2,6 +2,10 @@ const bcrypt = require('bcrypt')
 const {Events} = require('../models/Events')
 const User   = require('../models/Users')
 const { default: mongoose } = require('mongoose')
+const { ObjectId } = require('mongodb')
+
+
+//function to create an event 
 async function handleEvents(req,res)
 {
 
@@ -28,7 +32,7 @@ async function handleEvents(req,res)
      res.status(404).json(e.message)
     }
 }
-
+//function to find and return event from events collection 
 async function getEvents(req,res)
 {
     const id  = req.body.id
@@ -81,4 +85,26 @@ const addCoordinator = async (req, res) => {
       res.status(500).json('Cannot add coordinator');
     }
   }; 
-module.exports = {handleEvents,getEvents,addCoordinator}
+  async function lookParticipant(req,res)
+  {
+        const id = req.body.id
+        const eventId = req.body.eventId
+        try{
+
+          const event = await Events.findById(eventId)
+          const participants = event.participants
+          const result = participants.id(id)
+          if(result)
+          {
+            res.status(200).json(result)
+          }
+          else
+          res.status(400).json('Not found')
+        }
+        catch(e)
+        {
+          console.log(e)
+          res.status(400).json(e)
+        }
+  }
+module.exports = {handleEvents,getEvents,addCoordinator,lookParticipant}

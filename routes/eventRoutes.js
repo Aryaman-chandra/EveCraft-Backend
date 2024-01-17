@@ -1,18 +1,20 @@
 const express = require('express')
 const router = express.Router()
-const {handleEvents,getEvents,addCoordinator} = require('../controllers/eventsController')
+const {handleEvents,getEvents,addCoordinator,lookParticipant} = require('../controllers/eventsController')
 
 
 //route to get a list of events 
 router.get('/',getEvents)
 
-
 //router to add an event to a user  
-router.post('/add/event',handleEvents)
+router.post('/add',handleEvents)
 
 
 //route to set a coordinator 
 
-router.post('/add/coordinators',addCoordinator)
+router.post('/coordinators/add',addCoordinator)
 
+//route to check for authentication of a attendant 
+
+router.post('/participants/check',lookParticipant)
 module.exports = router

@@ -30,7 +30,7 @@ const EventsSchema = new Schema({
         },
         isPresent : {
             type : Boolean, 
-        }
+        },
       },  
     ]
 })
