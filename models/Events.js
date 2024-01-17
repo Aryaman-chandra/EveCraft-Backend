@@ -10,12 +10,13 @@ const EventsSchema = new Schema({
     startTime : String,
     endTime : String,
     coordinators : [
-        {
-          rid : {
+        
+            {
               type : mongoose.Schema.Types.ObjectId,
-              ref : 'Users' 
+              ref : 'Users' ,
+              unique : true
             }
-        }
+        
     ],
     participants : [
       {

@@ -33,7 +33,7 @@ async function getEvents(req,res)
 {
     const id  = req.body.id
     try{
-         await Events.find({$or:[{Event_Manager:new mongoose.Types.ObjectId(id)},{Coordinators:{$in:[new mongoose.Types.ObjectId(id)]}}]})
+         await Events.find({$or:[{event_manager:new mongoose.Types.ObjectId(id)},{coordinators:{$in:[new mongoose.Types.ObjectId(id)]}}]})
         .then((events)=>{
             res.status(200).json({status: 'Events found',Events:events})
         })
@@ -45,6 +45,40 @@ async function getEvents(req,res)
     }
 }
  
+const addCoordinator = async (req, res) => {
+    try {
+      const result = await User.findById(req.body.id);
+  
+      if (result) {
+        const event = await Events.findById(req.body.event);
+  
+        if (event) {
+          // Check if the coordinator already exists in the array
 
- 
-module.exports = {handleEvents,getEvents}
+          const existingCoordinator = event.coordinators.find(
+            (coordinator) => coordinator.equals(result._id)
+          );
+  
+          if (!existingCoordinator) {
+            event.coordinators.push(result);
+            await event.save();
+            result.events.push(event._id);
+            await result.save();
+  
+            console.log(event);
+            res.status(200).json(event);
+          } else {
+            res.status(400).json('Coordinator already exists for this event');
+          }
+        } else {
+          res.status(401).json('No such event exists');
+        }
+      } else {
+        res.status(404).json('User not found');
+      }
+    } catch (e) {
+      console.error(e);
+      res.status(500).json('Cannot add coordinator');
+    }
+  }; 
+module.exports = {handleEvents,getEvents,addCoordinator}
