@@ -2,9 +2,9 @@ POST http://localhost:3000/users/signup
 Content-Type: application/json
 
     {
-        "username" : "SwarnimBhAI",
-        "email" : "gandu@gmail.gandu",
-        "password" : "Arnar"
+        "username" : "AryamanBhAI",
+        "email" : "aryamanch14@gmail.com",
+        "password" : "Arahaeklsj"
     }
 ###
 POST http://localhost:3000/users/login

@@ -1,25 +1,59 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/Users')
+const jwt = require('jsonwebtoken')
+
+const maxAge = 3*24*60*60
+
+const createToken = (id)=>{
+        return jwt.sign({ id } , 'Our Secret for now' ,{
+            expiresIn : maxAge
+        })
+}
+
+const handleErrors = (err) =>{
+		  console.log(err.message);
+		  let errors = { email : '' , password : ''}
+
+         //duplicate error code 
+        if(err.code === 11000 )
+        {
+            errors.email = 'Email already Registred, try logging in instead'
+            return errors
+        }
+
+
+		  //validation errors 
+        if(err.message.includes('user validation failed'))
+        {
+            Object.values(err.errors).forEach( ({properties})=>{
+                //console.log(properties)
+                errors[properties.path] = properties.message
+            })
+        }
+	      return errors
+}
 
 async function handleSignUp(req,res){
     try{
-        let Hashpass = await bcrypt.hash(req.body.password, 8, null)
+        //let Hashpass = await bcrypt.hash(req.body.password, 8, null)
         await User.create(
-            {"username":req.body.username,"email" : req.body.email, "hashedPassword" : Hashpass,"Events":req.body.Events})
+            {"username":req.body.username,"email" : req.body.email, "password" : req.body.password,"Events":req.body.Events})
             .then((user)=>{
             console.log('User genrated with credentials')
             var createdUser = {
                 "username" : user.username , 
                 "email" :  user.email , 
-                "events" : user.Events , 
+                "events" : user.Events ,
+                "_id" : user._id 
             }  
-           return  res.status(200).json(createdUser)
+           const token = createToken(createdUser._id)
+           res.cookie('jwt' , token , { httpOnly:true , maxAge : maxAge*1000})
+           return  res.status(200).json(createdUser._id)
             })
-        }catch(e)
+        }catch(err)
         {
-            var error = {'message' : e}
-            console.log(error.message)
-            return res.status(401).json('User with those details already exists')
+			const errors =handleErrors(err);
+            return res.status(401).json(errors)
         }
 }
 
@@ -30,10 +64,10 @@ async function handleLogin (req,res){
 
         if(!user)
         {
-            return res.status(404).json('Invalid Username or Password')
+            return res.status(404).json({email : 'email not found'})
         }
 
-        var result = await bcrypt.compare(Password,user.hashedPassword)
+        var result = await bcrypt.compare(Password,user.password)
         if(result)
         {
 

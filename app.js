@@ -2,8 +2,6 @@ const express = require('express')
 
 const {connectToDb } = require('./db')
 
-const User = require('./models/Users')
-
 const {mongoose} = require('mongoose')
 
 const userRoutes = require('./routes/userRoutes')

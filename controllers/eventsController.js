@@ -45,7 +45,7 @@ async function getEvents(req,res)
     catch(e)
     {
         console.log(e)
-     res.send("Cannot find documents")
+        res.send("Cannot find documents")
     }
 }
  
