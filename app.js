@@ -8,7 +8,7 @@ const userRoutes = require('./routes/userRoutes')
 
 const eventRoutes = require('./routes/eventRoutes')
 
-const bcrypt = require('bcrypt')
+
 
 // init app & middleware
 

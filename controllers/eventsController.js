@@ -1,8 +1,20 @@
-const bcrypt = require('bcrypt')
 const {Events} = require('../models/Events')
 const User   = require('../models/Users')
+const jwt = require('jsonwebtoken')
 const { default: mongoose } = require('mongoose')
-const { ObjectId } = require('mongodb')
+
+
+//handling the errors in the events endpoints
+const handleErrors = (err)=>{
+      const errors = { status : 400,message : '' }
+      if(err.message ==='User not found')
+      {
+         errors.status = 404
+         errors.message = err.message
+      }
+
+}
+
 
 
 //function to create an event 
@@ -12,6 +24,10 @@ async function handleEvents(req,res)
     try{
 
         var  user = await User.findById(req.body.event_manager)
+        if(!user)
+        {
+          throw Error('User Not found')
+        }
         console.log(user._id)
          await Events.create({
             "event_manager" :  user._id ,
@@ -23,23 +39,23 @@ async function handleEvents(req,res)
         .then((event)=>{
             user.events.push(event._id)
             user.save()
-            res.status(201).json({status: "Event created succesfully"})
+            res.status(201).json({status: "200" , message : 'Event created Succesfully'})
         })
     }
     catch(e)
     {
-     console.log(e)
-     res.status(404).json(e.message)
+      error = handleErrors(e) 
+     res.status(404).json({error})
     }
 }
 //function to find and return event from events collection 
 async function getEvents(req,res)
 {
-    const id  = req.body.id
+    const id = req.body.id
     try{
          await Events.find({$or:[{event_manager:new mongoose.Types.ObjectId(id)},{coordinators:{$in:[new mongoose.Types.ObjectId(id)]}}]})
         .then((events)=>{
-            res.status(200).json({status: 'Events found',Events:events})
+            res.status(200).json({status: 'Found',message :'List of events', Events:events})
         })
     }
     catch(e)

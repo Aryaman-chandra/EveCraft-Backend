@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const {handleEvents,getEvents,addCoordinator,lookParticipant} = require('../controllers/eventsController')
-
+const {requireAuth} = require('../middlewares/authMiddleware')
 
 //route to get a list of events 
-router.get('/',getEvents)
+router.get('/',requireAuth,getEvents)
 
 //router to add an event to a user  
 router.post('/add',handleEvents)
