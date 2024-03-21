@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-
 const Schema =  mongoose.Schema
 
 const EventsSchema = new Schema({
@@ -9,15 +8,14 @@ const EventsSchema = new Schema({
     },
     startTime : String,
     endTime : String,
-    coordinators : [
-        
-            {
+    coordinators :{ 
+      type:[
+              {
               type : mongoose.Schema.Types.ObjectId,
               ref : 'Users' ,
-              unique : true
-            }
-        
-    ],
+              }
+          ]
+  },
     participants : [
       {
         name : {
@@ -30,6 +28,7 @@ const EventsSchema = new Schema({
         },
         isPresent : {
             type : Boolean, 
+            default : false,
         },
       },  
     ]

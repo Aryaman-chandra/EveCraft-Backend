@@ -1,6 +1,5 @@
 const {Events} = require('../models/Events')
 const User   = require('../models/Users')
-const jwt = require('jsonwebtoken')
 const { default: mongoose } = require('mongoose')
 
 
@@ -11,8 +10,10 @@ const handleErrors = (err)=>{
       {
          errors.status = 404
          errors.message = err.message
+         return errors
       }
-
+      errors.message = err.message
+      return errors
 }
 
 
@@ -28,12 +29,11 @@ async function handleEvents(req,res)
         {
           throw Error('User Not found')
         }
-        console.log(user._id)
          await Events.create({
             "event_manager" :  user._id ,
             "startTime"     :  req.body.startTime,
             "endTime"       :  req.body.endTime,
-            "coordinators"  :  req.body?.Coordinators,
+            "coordinators"  :  req.body?.coordinators,
             "participants"  :  req.body?.participants
         })
         .then((event)=>{
@@ -45,7 +45,7 @@ async function handleEvents(req,res)
     catch(e)
     {
       error = handleErrors(e) 
-     res.status(404).json({error})
+     res.status(404).json({"message":error.message})
     }
 }
 //function to find and return event from events collection 
@@ -88,17 +88,17 @@ const addCoordinator = async (req, res) => {
             console.log(event);
             res.status(200).json(event);
           } else {
-            res.status(400).json('Coordinator already exists for this event');
+            res.status(400).json({"message":'Coordinator already exists for this event'});
           }
         } else {
-          res.status(401).json('No such event exists');
+          res.status(401).json({"message":'No such event exists'});
         }
       } else {
-        res.status(404).json('User not found');
+        res.status(404).json({"message":'User not found'});
       }
     } catch (e) {
       console.error(e);
-      res.status(500).json('Cannot add coordinator');
+      res.status(500).json({"message":'Cannot add coordinator'});
     }
   }; 
   async function lookParticipant(req,res)
@@ -115,12 +115,12 @@ const addCoordinator = async (req, res) => {
             res.status(200).json(result)
           }
           else
-          res.status(400).json('Not found')
+          res.status(400).json({"message":'Not found'})
         }
         catch(e)
         {
           console.log(e)
-          res.status(400).json(e)
+          res.status(400).json({"message": e.message})
         }
   }
 module.exports = {handleEvents,getEvents,addCoordinator,lookParticipant}

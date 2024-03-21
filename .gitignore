@@ -1,2 +1,4 @@
 #http request test files 
 tests.http 
+#nodemodules
+node_modules/

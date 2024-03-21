@@ -2,3 +2,8 @@ This is the file where from now i will keep note of what i have done in backend
 and also what that needs to be done and requires priority 
 
 Need to set up dot env file to store my environment variables 
+
+Mar 15 
+I have added custom errors in some places 
+I implemented dotenv 
+Rememeber in your flutter application to check for token in app state before app starts to login 

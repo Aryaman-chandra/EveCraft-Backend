@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/Users')
 const jwt = require('jsonwebtoken')
+const crypto = require('node:crypto')
+const sendEmail = require('../utils/email')
 require('dotenv').config()
 const maxAge = 3*24*60*60
 
@@ -23,15 +25,12 @@ const handleErrors = (err) =>{
         {
             errors.password = 'Wrong Password'
         }
-
          //duplicate error code 
         if(err.code === 11000 )
         {
             errors.email = 'Email already Registred, try logging in instead'
             return errors
         }
-
-
 		  //validation errors 
         if(err.message.includes('user validation failed'))
         {
@@ -71,11 +70,7 @@ async function handleLogin (req,res){
     var email = req.body.email
     var Password = req.body.password
        try {
-        
-      
-        
         var user = await User.findOne({email:email})
-
         if(!user)
         {
             throw Error('Email not found')
@@ -97,12 +92,81 @@ async function handleLogin (req,res){
        }      
 
 }
+
 async function handleLogout(req,res){
     res.cookie('jwt','',{maxAge : 10})
     res.redirect('/')
 }
+
+async function forgotPassword(req,res) {
+    const user = await User.findOne({email : req.body.email})
+
+    if(!user){
+       const error = new Error('We could not find any email',404)
+       throw error;
+    }
+
+    const resetToken = user.createToken();
+    await user.save();
+    const resetUrl = `${req.protocol}://${req.get('host')}/users/resetPassword/${resetToken}`
+    const message = `We have received a password reset request. Please use the below link to reset your password\n\n${resetUrl}`;
+    let mail = {
+        type : 'Password Reset Email',
+        body :{
+            from : 'aryamanc24@gmail.com',
+            to : user.email,
+            subject : 'Password Reset ',
+            text : message
+        }
+    }
+    try{
+    await sendEmail(mail);
+        res.status(200).json({
+            status: 'success',
+            message: 'password reset link sent to email'
+        })
+    }catch(err){
+        user.passwordResetToken = undefined
+        user.passwordResetTokenExpires = undefined
+        user.save()
+        console.log(err.message)
+        res.status(400)
+        res.json({
+            status: 'error',
+            message: 'Could not send email'
+        })
+    }
+}
+let resetPassword=async (req,res)=>{
+    try{
+    const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
+    const user = await User.findOne({passwordResetToken:token, passwordResetTokenExpires:{$gt: Date.now()}})
+
+    if(!user){
+        return res.status(400).json({message:'Token is invalid or expired'})
+    }
+    user.password = req.body.password;
+    user.passwordResetToken = undefined
+    user.passwordResetTokenExpires = undefined
+    user.save()
+    return res.status(200).json('password changed')
+    }catch(err){
+        console.log(err.message+"and stack is /n"+err.stack)
+    }
+}
+let renderResetPassword = (req,res)=>{
+    
+    res.render('resetPassword',{
+        token : req.params.token
+    })
+}
+
+
     module.exports = {
         handleSignUp,
         handleLogin ,
-        handleLogout
+        handleLogout,
+        forgotPassword,
+        resetPassword,
+        renderResetPassword
     }

@@ -1,7 +1,7 @@
 const express = require('express')
 const router =  express.Router() 
 
-const {handleSignUp, handleLogin , handleLogout} = require('../controllers/userController')
+const userController = require('../controllers/userController')
     //Midway of developing i realized our api must not return a list of our user 
     // router.get('/',async (req,res)=>{
 
@@ -18,9 +18,12 @@ const {handleSignUp, handleLogin , handleLogout} = require('../controllers/userC
     // })
 
     //for user sign-up
-    router.post('/signup',handleSignUp)
+    router.post('/signup',userController.handleSignUp)
     //for user login 
-    router.post('/login',handleLogin)
+    router.post('/login',userController.handleLogin)
     //for logging a user out 
-    router.get('/logout',handleLogout)
+    router.get('/logout',userController.handleLogout)
+    router.post('/forgotPassword',userController.forgotPassword)
+    router.get('/resetPassword/:token',userController.renderResetPassword)
+    router.patch('/resetPassword/:token',userController.resetPassword)
  module.exports = router
