@@ -1,15 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const {handleEvents,getEvents} = require('../controllers/eventsController')
+const {handleEvents,getEvents,addCoordinator,lookParticipant} = require('../controllers/eventsController')
+const {requireAuth} = require('../middlewares/authMiddleware')
 
-
-//route to get a list of events 
-router.get('/',handleEvents)
-
-
-//router to add participants to an event 
-router.post('/add',getEvents)
-
-
-//route to set a coordinator 
+//Event Routes
+router.get('/',requireAuth,getEvents)
+router.post('/add',requireAuth,handleEvents)
+router.post('/coordinators/add',requireAuth,addCoordinator)
+router.post('/participants/check',requireAuth,lookParticipant)
 module.exports = router
