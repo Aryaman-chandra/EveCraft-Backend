@@ -90,7 +90,6 @@ async function handleLogin (req,res){
             const errors = handleErrors(err)
             res.status(400).json({errors})
        }      
-
 }
 
 async function handleLogout(req,res){
@@ -100,16 +99,30 @@ async function handleLogout(req,res){
 
 async function forgotPassword(req,res) {
     const user = await User.findOne({email : req.body.email})
-
     if(!user){
        const error = new Error('We could not find any email',404)
        throw error;
     }
-
     const resetToken = user.createToken();
     await user.save();
     const resetUrl = `${req.protocol}://${req.get('host')}/users/resetPassword/${resetToken}`
     const message = `We have received a password reset request. Please use the below link to reset your password\n\n${resetUrl}`;
+    const onSuccess = (req,res)=>{
+            res.status(200).json({
+            status : "Success!",
+            message : "Password Reset link send to Email!"
+    })
+    }
+    const onFailure = (err)=>{
+        user.passwordResetToken = undefined
+        user.passwordResetTokenExpires = undefined
+        user.save()
+        console.log(err.message)
+        return res.status(400).json({
+            status: 'error',
+            message: 'Could not send email'
+        })
+    }
     let mail = {
         type : 'Password Reset Email',
         body :{
@@ -117,41 +130,28 @@ async function forgotPassword(req,res) {
             to : user.email,
             subject : 'Password Reset ',
             text : message
-        }
+        },
+        onSuccess : onSuccess,
+        onFailure : onFailure
     }
-    try{
-    await sendEmail(mail);
-        res.status(200).json({
-            status: 'success',
-            message: 'password reset link sent to email'
-        })
-    }catch(err){
-        user.passwordResetToken = undefined
-        user.passwordResetTokenExpires = undefined
-        user.save()
-        console.log(err.message)
-        res.status(400)
-        res.json({
-            status: 'error',
-            message: 'Could not send email'
-        })
-    }
+     sendEmail(mail,req,res);
 }
 let resetPassword=async (req,res)=>{
     try{
     const token = crypto.createHash('sha256').update(req.params.token).digest('hex')
     const user = await User.findOne({passwordResetToken:token, passwordResetTokenExpires:{$gt: Date.now()}})
-
     if(!user){
         return res.status(400).json({message:'Token is invalid or expired'})
     }
     user.password = req.body.password;
     user.passwordResetToken = undefined
     user.passwordResetTokenExpires = undefined
-    user.save()
+    await user.save()
     return res.status(200).json('password changed')
     }catch(err){
+        const errors = handleErrors(err)
         console.log(err.message+"and stack is /n"+err.stack)
+        return res.status(400).json(errors)
     }
 }
 let renderResetPassword = (req,res)=>{
@@ -160,8 +160,6 @@ let renderResetPassword = (req,res)=>{
         token : req.params.token
     })
 }
-
-
     module.exports = {
         handleSignUp,
         handleLogin ,

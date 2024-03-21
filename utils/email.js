@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer')
 require('dotenv').config()
-const sendEmail = (option) =>{
+const sendEmail = (option,req,res) =>{
     //create a transporter
     const transporter = nodemailer.createTransport({
         service : 'gmail',
@@ -9,14 +9,15 @@ const sendEmail = (option) =>{
             pass : process.env.EMAIL_PASSWORD
         }
     })
-    console.log(option.body)
     transporter.sendMail(option.body,(err)=>{
         if(err){
-            console.log(err)
             console.log('error sending email');
+            option.onFailure(err)
         }
-        else
-        console.log(`${option.type} sent`)
+        else{
+            option.onSuccess(req,res)
+            console.log(`${option.type} sent`)
+        }
     })
 }
 module.exports = sendEmail
